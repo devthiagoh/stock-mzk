@@ -31,23 +31,19 @@ public class ProdutoService {
 	}	
 
 	private void adicionarProduto(Produto produto) {
-				
-		if (produtos.isEmpty()) {
+		
+		Predicate<Produto> filter = find -> find.getCodigoBarras().equals(produto.getCodigoBarras());
+		
+		Produto found = produtos.stream().filter(filter).findAny().orElse(null);
+		
+		if (found == null) {			
+			adicionar(produto);
+		} else if (!found.getNumeroSerie().equals(produto.getNumeroSerie())){
 			adicionar(produto);
 		} else {
-
-			Predicate<Produto> filter = find -> find.getCodigoBarras().equals(produto.getCodigoBarras());
-			
-			Produto found = produtos.stream().filter(filter).findAny().orElse(null);
-			
-			if (found == null) {			
-				adicionar(produto);
-			} else if (!found.getNumeroSerie().equals(produto.getNumeroSerie())){
-				adicionar(produto);
-			} else {
-				validationProduto.handlerValidationException("Produto já adicionado em estoque!");
-			}
+			validationProduto.handlerValidationException("Produto já adicionado em estoque!");
 		}
+		
 	}
 	
 	private void adicionar(Produto produto) {
